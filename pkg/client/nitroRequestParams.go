@@ -17,6 +17,7 @@
 package client
 
 import (
+	"net/url"
 	"sort"
 	"strings"
 )
@@ -80,7 +81,7 @@ func getNitroUrlPath(r NitroResourceSelector, t NitroRequestType) string {
 		return getNitroConfigUrl() + r.GetNitroResourceName()
 	case NitroStatsRequest:
 		return getNitroStatsUrl() + r.GetNitroResourceName()
-	case NitroUnknownRequestType:
+	case NitroUnknownRequest:
 		return ""
 	default:
 		return ""
@@ -117,7 +118,10 @@ func getQueryMapEntriesAsString(queryMap map[string]string) string {
 
 	for index, key := range keys {
 		value := queryMap[key]
-		output.WriteString(key + ":" + value + getUrlQueryMapStringSeparator(index, lastIndex))
+		output.WriteString(key)
+		output.WriteString(":")
+		output.WriteString(url.PathEscape(value))
+		output.WriteString(getUrlQueryMapStringSeparator(index, lastIndex))
 	}
 
 	return output.String()

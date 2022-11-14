@@ -54,7 +54,7 @@ func TestNitroRequestParams_GetMethod(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		testName := fmt.Sprintf("%d", tt.params.Method)
+		testName := fmt.Sprintf("%s", tt.params.Method.String())
 		t.Run(testName, func(t *testing.T) {
 			result := tt.params.GetMethod()
 			if result != tt.want {
@@ -69,7 +69,7 @@ func TestNitroRequestParams_GetUrl(t *testing.T) {
 		params NitroRequestParamsReader
 		want   string
 	}{
-		{NitroRequestParams{Resource: UnknownResource, Type: NitroUnknownRequestType}, ""},
+		{NitroRequestParams{Resource: UnknownResource, Type: NitroUnknownRequest}, ""},
 		{NitroRequestParams{Resource: UnknownResource, Type: 300}, ""},
 		{NitroRequestParams{Resource: UnknownResource, Type: NitroConfigRequest}, "/nitro/v1/config/"},
 		{NitroRequestParams{Resource: SystemBackup, Type: NitroConfigRequest}, "/nitro/v1/config/systembackup"},
@@ -79,7 +79,11 @@ func TestNitroRequestParams_GetUrl(t *testing.T) {
 			Resource:  SystemBackup,
 			Type:      NitroConfigRequest,
 			Arguments: map[string]string{"key1": "value1"}},
-			"/nitro/v1/config/systembackup?args=key1:value1"},
+			"/nitro/v1/config/systembackup?args=key1:value1"}, {NitroRequestParams{
+			Resource:  SystemBackup,
+			Type:      NitroConfigRequest,
+			Arguments: map[string]string{"fileLocation": "/var/ns_sys_backup"}},
+			"/nitro/v1/config/systembackup?args=fileLocation:%2Fvar%2Fns_sys_backup"},
 		{NitroRequestParams{
 			Resource:  SystemBackup,
 			Type:      NitroConfigRequest,
@@ -102,6 +106,32 @@ func TestNitroRequestParams_GetUrl(t *testing.T) {
 		testName := fmt.Sprintf("%s", tt.params.GetResourceName())
 		t.Run(testName, func(t *testing.T) {
 			result := tt.params.GetUrlPathAndQuery()
+			if result != tt.want {
+				t.Errorf("result: %s, expected: %s", result, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetNitroUrlPath(t *testing.T) {
+	var tests = []struct {
+		params NitroRequestParams
+		want   string
+	}{
+		{NitroRequestParams{Resource: UnknownResource, Type: NitroUnknownRequest}, ""},
+		{NitroRequestParams{Resource: UnknownResource, Type: NitroConfigRequest}, "/nitro/v1/config/"},
+		{NitroRequestParams{Resource: UnknownResource, Type: NitroStatsRequest}, "/nitro/v1/stats/"},
+		{NitroRequestParams{Resource: UnknownResource, Type: 300}, ""},
+		{NitroRequestParams{Resource: SystemBackup, Type: NitroUnknownRequest}, ""},
+		{NitroRequestParams{Resource: SystemBackup, Type: NitroConfigRequest}, "/nitro/v1/config/systembackup"},
+		{NitroRequestParams{Resource: SystemBackup, Type: NitroStatsRequest}, "/nitro/v1/stats/systembackup"},
+		{NitroRequestParams{Resource: SystemBackup, Type: 300}, ""},
+	}
+
+	for _, tt := range tests {
+		testName := fmt.Sprintf("%s", tt.params.Type.String())
+		t.Run(testName, func(t *testing.T) {
+			result := tt.params.GetUrlPath()
 			if result != tt.want {
 				t.Errorf("result: %s, expected: %s", result, tt.want)
 			}

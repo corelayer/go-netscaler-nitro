@@ -19,7 +19,9 @@ package client
 type NitroRequestType int
 
 const (
-	NitroUnknownRequestType = 0
-	NitroConfigRequest      = 1
-	NitroStatsRequest       = 2
+	NitroUnknownRequest NitroRequestType = 0
+	NitroConfigRequest                   = 1
+	NitroStatsRequest                    = 2
 )
+
+//go:generate stringer -type=NitroRequestType -output=nitroRequestType_string.go
