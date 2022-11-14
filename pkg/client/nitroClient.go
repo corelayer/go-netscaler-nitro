@@ -18,27 +18,18 @@ package client
 
 import (
 	"crypto/tls"
+	"io"
 	"log"
 	"net/http"
 )
 
-type Client struct {
-	baseUrl string
-	client  *http.Client
-	log     *log.Logger
+type NitroClient struct {
+	client   *http.Client
+	settings NitroSettings
+	log      *log.Logger
 }
 
-func GetResourceConfigUrl(r NitroResourceSelector, p NitroGetRequestParams) string {
-	return "/nitro/v1/config/" + r.GetNitroResourceName() + p.GetNitroRequestUrlQueryString()
-}
-
-func GetNitroStatsUrl(r NitroResourceSelector, p NitroGetRequestParams) string {
-	return "/nitro/v1/stats/" + r.GetNitroResourceName() + p.GetNitroRequestUrlQueryString()
-}
-
-func newClient(node NodeReader, settings ConnectionSettings, logger *log.Logger) (*Client, error) {
-	baseUrl := node.GetNodeUrl(settings.UrlScheme)
-
+func newClient(settings NitroSettings, logger *log.Logger) (*NitroClient, error) {
 	tlsLog, err := settings.GetTlsSecretLogWriter()
 	if err != nil {
 		return nil, err
@@ -46,23 +37,34 @@ func newClient(node NodeReader, settings ConnectionSettings, logger *log.Logger)
 
 	if tlsLog != nil {
 		logger.Printf("WARNING, exporting TLS Secrets to %s\n", settings.LogTlsSecretsDestination)
-
 	}
 
 	timeout, err := settings.GetTimeoutDuration()
 
-	return &Client{
-		baseUrl: baseUrl,
+	return &NitroClient{
 		client: &http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{
 					KeyLogWriter:       tlsLog,
-					InsecureSkipVerify: settings.ValidateServerCertificate,
+					InsecureSkipVerify: !settings.ValidateServerCertificate,
 				},
 				Proxy: http.ProxyFromEnvironment,
 			},
 			Timeout: timeout,
 		},
-		log: logger,
+		settings: settings,
+		log:      logger,
 	}, nil
+}
+
+func (c NitroClient) createRequest(params NitroRequestParamsReader, body io.Reader) (*http.Request, error) {
+	request, err := http.NewRequest(params.GetMethod(), params.GetUrlPathAndQuery(), body)
+
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("Content-Type", "application/json")
+
+	request.Header.Set("X-NITRO-USER", c.settings.Username)
+	request.Header.Set("X-NITRO-PASS", c.settings.Password)
+
+	return request, err
 }

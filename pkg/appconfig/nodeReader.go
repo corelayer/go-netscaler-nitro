@@ -14,9 +14,8 @@
  *    limitations under the License.
  */
 
-package client
+package appconfig
 
-type Credentials struct {
-	Username string `json:"username" yaml:"username"`
-	Password string `json:"password" yaml:"password"`
+type NodeReader interface {
+	GetNodeUrl(scheme UrlSchemeReader) string
 }

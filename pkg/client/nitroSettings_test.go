@@ -23,12 +23,8 @@ import (
 )
 
 func TestSettings_GetTimeoutDuration(t *testing.T) {
-	s := ConnectionSettings{
-		UrlScheme:                 HTTP,
-		ValidateServerCertificate: false,
-		Timeout:                   10,
-		LogTlsSecrets:             false,
-		LogTlsSecretsDestination:  "",
+	s := NitroSettings{
+		Timeout: 10,
 	}
 
 	var tests = []struct {
@@ -45,10 +41,10 @@ func TestSettings_GetTimeoutDuration(t *testing.T) {
 		testName := fmt.Sprintf("%d", tt.timeout)
 		t.Run(testName, func(t *testing.T) {
 			s.Timeout = tt.timeout
-			result, _ := s.GetTimeoutDuration()
+			result1, _ := s.GetTimeoutDuration()
 
-			if result != tt.want {
-				t.Errorf("GetTimeoutDuration(%d) = %d, expected %d", tt.timeout, result, tt.want)
+			if result1 != tt.want {
+				t.Errorf("GetTimeoutDuration(%d) = %d, expected %d", tt.timeout, result1, tt.want)
 			}
 		})
 	}

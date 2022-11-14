@@ -16,8 +16,10 @@
 
 package client
 
-import "io"
+type NitroRequestType int
 
-type TlsSecretLogWriter interface {
-	GetTlsSecretLogWriter() (io.Writer, error)
-}
+const (
+	NitroUnknownRequestType = 0
+	NitroConfigRequest      = 1
+	NitroStatsRequest       = 2
+)

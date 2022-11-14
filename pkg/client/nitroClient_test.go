@@ -16,6 +16,3 @@
 
 package client
 
-type UrlSchemeReader interface {
-	GetUrlScheme() string
-}

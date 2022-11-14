@@ -21,13 +21,42 @@ import (
 	"strings"
 )
 
-type NitroGetRequestParams struct {
+type NitroRequestParams struct {
+	Resource   NitroResourceSelector
+	Type       NitroRequestType
+	Method     NitroRequestMethod
 	Arguments  map[string]string
 	Filter     map[string]string
 	Attributes map[string]string
 }
 
-func (p NitroGetRequestParams) GetNitroRequestUrlQueryString() string {
+func (p NitroRequestParams) GetResourceName() string {
+	return p.Resource.GetNitroResourceName()
+}
+
+func (p NitroRequestParams) GetMethod() string {
+	switch p.Method {
+	case NitroUnknownMethod:
+		return ""
+	case NitroGetMethod:
+		return "GET"
+	case NitroPostMethod:
+		return "POST"
+	default:
+		return ""
+	}
+}
+
+func (p NitroRequestParams) GetUrlPathAndQuery() string {
+	return p.GetUrlPath() + p.GetQueryString()
+}
+
+func (p NitroRequestParams) GetUrlPath() string {
+	return getNitroUrlPath(p.Resource, p.Type)
+
+}
+
+func (p NitroRequestParams) GetQueryString() string {
 	var output strings.Builder
 
 	output.WriteString(buildUrlQueryMapString(output.Len(), "args=", p.Arguments))
@@ -35,6 +64,27 @@ func (p NitroGetRequestParams) GetNitroRequestUrlQueryString() string {
 	output.WriteString(buildUrlQueryMapString(output.Len(), "attrs=", p.Attributes))
 
 	return output.String()
+}
+
+func getNitroConfigUrl() string {
+	return "/nitro/v1/config/"
+}
+
+func getNitroStatsUrl() string {
+	return "/nitro/v1/stats/"
+}
+
+func getNitroUrlPath(r NitroResourceSelector, t NitroRequestType) string {
+	switch t {
+	case NitroConfigRequest:
+		return getNitroConfigUrl() + r.GetNitroResourceName()
+	case NitroStatsRequest:
+		return getNitroStatsUrl() + r.GetNitroResourceName()
+	case NitroUnknownRequestType:
+		return ""
+	default:
+		return ""
+	}
 }
 
 func buildUrlQueryMapString(urlQueryLength int, prefix string, queryMap map[string]string) string {

@@ -16,11 +16,12 @@
 
 package client
 
-type EnvironmentType int
-
-const (
-	UnknownEnvironmentType EnvironmentType = iota
-	Standalone
-	HighAvailable
-	Cluster
+import (
+	"io"
+	"time"
 )
+
+type NitroSettingsReader interface {
+	GetTlsSecretLogWriter() (io.Writer, error)
+	GetTimeoutDuration() (time.Duration, error)
+}

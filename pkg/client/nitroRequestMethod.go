@@ -16,12 +16,10 @@
 
 package client
 
-type Node struct {
-	Name    string `json:"name" yaml:"name"`
-	Address string `json:"address" yaml:"address"`
-}
+type NitroRequestMethod int
 
-//GetNodeUrl Get the full Url for the Node using the provided SchemeReader
-func (n *Node) GetNodeUrl(scheme UrlSchemeReader) string {
-	return scheme.GetUrlScheme() + n.Address
-}
+const (
+	NitroUnknownMethod = 0
+	NitroGetMethod     = 1
+	NitroPostMethod    = 2
+)

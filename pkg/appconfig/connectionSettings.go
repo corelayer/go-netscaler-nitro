@@ -14,14 +14,7 @@
  *    limitations under the License.
  */
 
-package client
-
-import (
-	"io"
-	"os"
-	"strconv"
-	"time"
-)
+package appconfig
 
 type ConnectionSettings struct {
 	UrlScheme                 UrlScheme `json:"urlScheme" yaml:"urlScheme"`                                                   // Secure (HTTPS) or Insecure (HTTP) Connection
@@ -29,22 +22,4 @@ type ConnectionSettings struct {
 	Timeout                   int       `json:"timeout" yaml:"timeout"`                                                       // Request timeout in seconds
 	LogTlsSecrets             bool      `json:"logTlsSecrets,omitempty" yaml:"logTlsSecrets,omitempty"`                       // Log TLS Secrets
 	LogTlsSecretsDestination  string    `json:"logTlsSecretsDestination,omitempty" yaml:"logTlsSecretsDestination,omitempty"` // File destination for TLS Secrets
-}
-
-func (s *ConnectionSettings) GetTlsSecretLogWriter() (io.Writer, error) {
-	if !s.LogTlsSecrets {
-		return nil, nil
-	}
-
-	tlsLog, err := os.OpenFile(s.LogTlsSecretsDestination, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
-	if err != nil {
-		return nil, err
-	}
-	return tlsLog, nil
-
-}
-
-//GetTimeoutDuration Returns a time.Duration based on the set timout in seconds
-func (s *ConnectionSettings) GetTimeoutDuration() (time.Duration, error) {
-	return time.ParseDuration(strconv.Itoa(s.Timeout) + "s")
 }

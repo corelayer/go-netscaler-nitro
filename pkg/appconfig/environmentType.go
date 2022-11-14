@@ -14,8 +14,13 @@
  *    limitations under the License.
  */
 
-package client
+package appconfig
 
-type NodeReader interface {
-	GetNodeUrl(scheme UrlSchemeReader) string
-}
+type EnvironmentType int
+
+const (
+	UnknownEnvironmentType EnvironmentType = iota
+	Standalone
+	HighAvailable
+	Cluster
+)

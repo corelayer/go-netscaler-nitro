@@ -14,24 +14,9 @@
  *    limitations under the License.
  */
 
-package client
+package appconfig
 
-type UrlScheme int
-
-const (
-	UnknownScheme UrlScheme = 0
-	HTTP                    = 1
-	HTTPS                   = 2
-)
-
-//GetUrlScheme Returns the URL prefix for the selected UrlScheme
-func (s UrlScheme) GetUrlScheme() string {
-	switch s {
-	case HTTP:
-		return "http://"
-	case HTTPS:
-		return "https://"
-	default:
-		return ""
-	}
+type Credentials struct {
+	Username string `json:"username" yaml:"username"`
+	Password string `json:"password" yaml:"password"`
 }
