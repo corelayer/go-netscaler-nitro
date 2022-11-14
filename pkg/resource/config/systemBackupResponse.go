@@ -14,22 +14,17 @@
  *    limitations under the License.
  */
 
-package controllers
+package config
 
-type BackupLevel int
-
-const (
-	BasicBackup BackupLevel = iota
-	FullBackup
-)
-
-func (l BackupLevel) String() string {
-	switch l {
-	case BasicBackup:
-		return "basic"
-	case FullBackup:
-		return "full"
-	default:
-		return "full"
-	}
+type SystemBackupResponse struct {
+	Filename         string  `json:"filename,omitempty"`
+	Level            string  `json:"level,omitempty"`
+	IncludeKernel    string  `json:"includekernel,omitempty"`
+	Comment          string  `json:"comment,omitempty"`
+	Size             float64 `json:"size,omitempty"`
+	UseLocalTimezone bool    `json:"uselocaltimezone,omitempty"`
+	CreationTime     string  `json:"creationtime,omitempty"`
+	Version          string  `json:"version,omitempty"`
+	CreatedBy        string  `json:"createdby,omitempty"`
+	IpAddress        string  `json:"ipaddress,omitempty"`
 }

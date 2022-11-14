@@ -21,41 +21,19 @@ import (
 	"testing"
 )
 
-func TestGetResourceConfigUrl(t *testing.T) {
+func TestNitroResource_GetNitroResourceName(t *testing.T) {
 	var tests = []struct {
 		resource NitroResource
-		params   NitroGetRequestParams
 		want     string
 	}{
-		{UnknownResource, NitroGetRequestParams{}, "/nitro/v1/config/"},
-		{SystemBackup, NitroGetRequestParams{}, "/nitro/v1/config/systembackup"},
+		{UnknownResource, ""},
+		{SystemBackup, "systembackup"},
 	}
 
 	for _, tt := range tests {
 		testName := fmt.Sprintf("%s", tt.resource.GetNitroResourceName())
 		t.Run(testName, func(t *testing.T) {
-			result := GetResourceConfigUrl(tt.resource, tt.params)
-			if result != tt.want {
-				t.Errorf("result: %s, expected: %s", result, tt.want)
-			}
-		})
-	}
-}
-
-func TestGetNitroStatsUrl(t *testing.T) {
-	var tests = []struct {
-		resource NitroResource
-		params   NitroGetRequestParams
-		want     string
-	}{
-		{UnknownResource, NitroGetRequestParams{}, "/nitro/v1/stats/"},
-		{SystemBackup, NitroGetRequestParams{}, "/nitro/v1/stats/systembackup"},
-	}
-
-	for _, tt := range tests {
-		testName := fmt.Sprintf("%s", tt.resource.GetNitroResourceName())
-		t.Run(testName, func(t *testing.T) {
-			result := GetNitroStatsUrl(tt.resource, tt.params)
+			result := tt.resource.GetNitroResourceName()
 			if result != tt.want {
 				t.Errorf("result: %s, expected: %s", result, tt.want)
 			}

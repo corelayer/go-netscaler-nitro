@@ -16,6 +16,18 @@
 
 package client
 
-type NodeReader interface {
-	GetNodeUrl(scheme UrlSchemeReader) string
+type NitroResource int
+
+const (
+	UnknownResource NitroResource = iota
+	SystemBackup
+)
+
+func (r NitroResource) GetNitroResourceName() string {
+	switch r {
+	case SystemBackup:
+		return "systembackup"
+	default:
+		return ""
+	}
 }

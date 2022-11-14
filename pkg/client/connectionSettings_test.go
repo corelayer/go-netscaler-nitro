@@ -23,12 +23,12 @@ import (
 )
 
 func TestSettings_GetTimeoutDuration(t *testing.T) {
-	s := Settings{
-		Scheme:                   HTTP,
-		InsecureSkipVerify:       false,
-		Timeout:                  10,
-		LogTlsSecrets:            false,
-		LogTlsSecretsDestination: "",
+	s := ConnectionSettings{
+		UrlScheme:                 HTTP,
+		ValidateServerCertificate: false,
+		Timeout:                   10,
+		LogTlsSecrets:             false,
+		LogTlsSecretsDestination:  "",
 	}
 
 	var tests = []struct {

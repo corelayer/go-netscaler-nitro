@@ -22,6 +22,6 @@ type Node struct {
 }
 
 //GetNodeUrl Get the full Url for the Node using the provided SchemeReader
-func (n *Node) GetNodeUrl(scheme SchemeReader) string {
+func (n *Node) GetNodeUrl(scheme UrlSchemeReader) string {
 	return scheme.GetUrlScheme() + n.Address
 }

@@ -20,7 +20,6 @@ import (
 	"crypto/tls"
 	"log"
 	"net/http"
-	"strings"
 )
 
 type Client struct {
@@ -29,16 +28,16 @@ type Client struct {
 	log     *log.Logger
 }
 
-func (c *Client) getConfigUrl() string {
-	return strings.Trim(c.baseUrl, " /") + "/nitro/v1/config/"
+func GetResourceConfigUrl(r NitroResourceSelector, p NitroGetRequestParams) string {
+	return "/nitro/v1/config/" + r.GetNitroResourceName() + p.GetNitroRequestUrlQueryString()
 }
 
-func (c *Client) getStatsUrl() string {
-	return strings.Trim(c.baseUrl, " /") + "/nitro/v1/stats/"
+func GetNitroStatsUrl(r NitroResourceSelector, p NitroGetRequestParams) string {
+	return "/nitro/v1/stats/" + r.GetNitroResourceName() + p.GetNitroRequestUrlQueryString()
 }
 
-func newClient(node NodeReader, settings Settings, logger *log.Logger) (*Client, error) {
-	baseUrl := node.GetNodeUrl(settings.Scheme)
+func newClient(node NodeReader, settings ConnectionSettings, logger *log.Logger) (*Client, error) {
+	baseUrl := node.GetNodeUrl(settings.UrlScheme)
 
 	tlsLog, err := settings.GetTlsSecretLogWriter()
 	if err != nil {
@@ -58,7 +57,7 @@ func newClient(node NodeReader, settings Settings, logger *log.Logger) (*Client,
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{
 					KeyLogWriter:       tlsLog,
-					InsecureSkipVerify: settings.InsecureSkipVerify,
+					InsecureSkipVerify: settings.ValidateServerCertificate,
 				},
 				Proxy: http.ProxyFromEnvironment,
 			},

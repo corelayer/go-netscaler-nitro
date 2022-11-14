@@ -29,10 +29,14 @@ func TestNode_GetNodeUrl(t *testing.T) {
 
 	var tests = []struct {
 		address string
-		scheme  Scheme
+		scheme  UrlScheme
 		want    string
 	}{
 		{
+			address: "node",
+			scheme:  UnknownScheme,
+			want:    "node",
+		}, {
 			address: "node",
 			scheme:  HTTP,
 			want:    "http://node",
@@ -42,6 +46,10 @@ func TestNode_GetNodeUrl(t *testing.T) {
 			want:    "https://node",
 		},
 		{
+			address: "127.0.0.1",
+			scheme:  UnknownScheme,
+			want:    "127.0.0.1",
+		}, {
 			address: "127.0.0.1",
 			scheme:  HTTP,
 			want:    "http://127.0.0.1",

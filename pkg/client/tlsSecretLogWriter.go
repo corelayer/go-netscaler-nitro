@@ -16,6 +16,8 @@
 
 package client
 
-type NodeReader interface {
-	GetNodeUrl(scheme UrlSchemeReader) string
+import "io"
+
+type TlsSecretLogWriter interface {
+	GetTlsSecretLogWriter() (io.Writer, error)
 }

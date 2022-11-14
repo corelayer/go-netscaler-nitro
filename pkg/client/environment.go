@@ -24,12 +24,12 @@ import (
 )
 
 type Environment struct {
-	Name        string          `json:"name" yaml:"name"`               // Target environment name, such as "Production"
-	Type        EnvironmentType `json:"type" yaml:"type"`               // Target type: "StandAlone", "HighAvailabilityPair", "Cluster"
-	SNIP        Node            `json:"snip" yaml:"snip"`               // Connection details for the shared SNIP (SNIP) of the environment
-	Nodes       []Node          `json:"nodes" yaml:"nodes"`             // Connection details for the individual NSIP of each node
-	Credentials Credentials     `json:"credentials" yaml:"credentials"` // Credentials
-	Settings    Settings        `json:"settings" yaml:"settings"`       // Connections settings
+	Name        string             `json:"name" yaml:"name"`               // Target environment name, such as "Production"
+	Type        EnvironmentType    `json:"type" yaml:"type"`               // Target type: "StandAlone", "HighAvailabilityPair", "Cluster"
+	SNIP        Node               `json:"snip" yaml:"snip"`               // Connection details for the shared SNIP (SNIP) of the environment
+	Nodes       []Node             `json:"nodes" yaml:"nodes"`             // Connection details for the individual NSIP of each node
+	Credentials Credentials        `json:"credentials" yaml:"credentials"` // Credentials
+	Settings    ConnectionSettings `json:"settings" yaml:"settings"`       // Connections settings
 }
 
 //GetAllNitroClients Get a map of NitroClient for every node in the environment (NSIP/SNIP)
@@ -39,11 +39,11 @@ func (e *Environment) GetAllNitroClients() (map[string]service.NitroClient, erro
 		for _, n := range e.Nodes {
 			client, err := service.NewNitroClientFromParams(
 				service.NitroParams{
-					Url:           n.GetNodeUrl(e.Settings.Scheme),
+					Url:           n.GetNodeUrl(e.Settings.UrlScheme),
 					Username:      e.Credentials.Username,
 					Password:      e.Credentials.Password,
 					ProxiedNs:     "",
-					SslVerify:     e.Settings.InsecureSkipVerify,
+					SslVerify:     e.Settings.ValidateServerCertificate,
 					Timeout:       e.Settings.Timeout,
 					RootCAPath:    "",
 					ServerName:    "",
@@ -65,11 +65,11 @@ func (e *Environment) GetAllNitroClients() (map[string]service.NitroClient, erro
 	if e.SNIP != emptyNode {
 		client, err := service.NewNitroClientFromParams(
 			service.NitroParams{
-				Url:           e.SNIP.GetNodeUrl(e.Settings.Scheme),
+				Url:           e.SNIP.GetNodeUrl(e.Settings.UrlScheme),
 				Username:      e.Credentials.Username,
 				Password:      e.Credentials.Password,
 				ProxiedNs:     "",
-				SslVerify:     e.Settings.InsecureSkipVerify,
+				SslVerify:     e.Settings.ValidateServerCertificate,
 				Timeout:       e.Settings.Timeout,
 				RootCAPath:    "",
 				ServerName:    "",

@@ -16,21 +16,6 @@
 
 package client
 
-type Scheme int
-
-const (
-	HTTP Scheme = iota
-	HTTPS
-)
-
-//GetUrlScheme Returns the URL prefix for the selected Scheme
-func (s Scheme) GetUrlScheme() string {
-	switch s {
-	case HTTP:
-		return "http://"
-	case HTTPS:
-		return "https://"
-	default:
-		return ""
-	}
+type NitroResourceSelector interface {
+	GetNitroResourceName() string
 }

@@ -19,7 +19,8 @@ package client
 type EnvironmentType int
 
 const (
-	Standalone EnvironmentType = iota
+	UnknownEnvironmentType EnvironmentType = iota
+	Standalone
 	HighAvailable
 	Cluster
 )

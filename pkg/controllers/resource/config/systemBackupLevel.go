@@ -14,8 +14,22 @@
  *    limitations under the License.
  */
 
-package client
+package config
 
-type NodeReader interface {
-	GetNodeUrl(scheme UrlSchemeReader) string
+type SystemBackupLevel int
+
+const (
+	SystemBackupBasic SystemBackupLevel = iota
+	SystemBackupFull
+)
+
+func (l SystemBackupLevel) String() string {
+	switch l {
+	case SystemBackupBasic:
+		return "basic"
+	case SystemBackupFull:
+		return "full"
+	default:
+		return "full"
+	}
 }

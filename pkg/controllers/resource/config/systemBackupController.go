@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package controllers
+package config
 
 import (
 	"encoding/base64"
@@ -25,14 +25,14 @@ import (
 	"strings"
 )
 
-type BackupController struct {
+type SystemBackupController struct {
 	client service.NitroClient
 	name   string
-	level  BackupLevel
+	level  SystemBackupLevel
 }
 
-func NewBackupController(client service.NitroClient, name string, level BackupLevel) *BackupController {
-	c := BackupController{
+func NewBackupController(client service.NitroClient, name string, level SystemBackupLevel) *SystemBackupController {
+	c := SystemBackupController{
 		client: service.NitroClient{},
 		name:   name,
 		level:  level,
@@ -42,7 +42,7 @@ func NewBackupController(client service.NitroClient, name string, level BackupLe
 }
 
 // Create sends a request to the configured NitroClient to create a backup with the configured name and level
-func (c *BackupController) Create() error {
+func (c *SystemBackupController) Create() error {
 	// Filename must not have a filename extension
 	data := system.Systembackup{
 		Filename: strings.TrimSuffix(c.name, ".tgz"),
@@ -53,7 +53,7 @@ func (c *BackupController) Create() error {
 	return err
 }
 
-func (c *BackupController) Get() (io.Reader, error) {
+func (c *SystemBackupController) Get() (io.Reader, error) {
 	params := service.FindParams{
 		ArgsMap:                  map[string]string{"fileLocation": url.PathEscape("/var/ns_sys_backup")},
 		ResourceType:             "systemfile",
@@ -75,7 +75,7 @@ func (c *BackupController) Get() (io.Reader, error) {
 	return output, err
 }
 
-func (c *BackupController) Delete() error {
+func (c *SystemBackupController) Delete() error {
 	err := c.client.DeleteResource(service.Systembackup.Type(), c.name)
 	return err
 }

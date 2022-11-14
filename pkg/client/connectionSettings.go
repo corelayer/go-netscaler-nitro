@@ -23,15 +23,15 @@ import (
 	"time"
 )
 
-type Settings struct {
-	Scheme                   Scheme `json:"scheme" yaml:"scheme"`                                                         // Secure (HTTPS) or Insecure (HTTP) Connection
-	InsecureSkipVerify       bool   `json:"verifyCertificate" yaml:"verifyCertificate"`                                   // Validate server certificate
-	Timeout                  int    `json:"timeout" yaml:"timeout"`                                                       // Request timeout in seconds
-	LogTlsSecrets            bool   `json:"logTlsSecrets,omitempty" yaml:"logTlsSecrets,omitempty"`                       // Log TLS Secrets
-	LogTlsSecretsDestination string `json:"logTlsSecretsDestination,omitempty" yaml:"logTlsSecretsDestination,omitempty"` // File destination for TLS Secrets
+type ConnectionSettings struct {
+	UrlScheme                 UrlScheme `json:"urlScheme" yaml:"urlScheme"`                                                   // Secure (HTTPS) or Insecure (HTTP) Connection
+	ValidateServerCertificate bool      `json:"verifyCertificate" yaml:"verifyCertificate"`                                   // Validate server certificate
+	Timeout                   int       `json:"timeout" yaml:"timeout"`                                                       // Request timeout in seconds
+	LogTlsSecrets             bool      `json:"logTlsSecrets,omitempty" yaml:"logTlsSecrets,omitempty"`                       // Log TLS Secrets
+	LogTlsSecretsDestination  string    `json:"logTlsSecretsDestination,omitempty" yaml:"logTlsSecretsDestination,omitempty"` // File destination for TLS Secrets
 }
 
-func (s *Settings) GetTlsSecretLogWriter() (io.Writer, error) {
+func (s *ConnectionSettings) GetTlsSecretLogWriter() (io.Writer, error) {
 	if !s.LogTlsSecrets {
 		return nil, nil
 	}
@@ -45,6 +45,6 @@ func (s *Settings) GetTlsSecretLogWriter() (io.Writer, error) {
 }
 
 //GetTimeoutDuration Returns a time.Duration based on the set timout in seconds
-func (s *Settings) GetTimeoutDuration() (time.Duration, error) {
+func (s *ConnectionSettings) GetTimeoutDuration() (time.Duration, error) {
 	return time.ParseDuration(strconv.Itoa(s.Timeout) + "s")
 }

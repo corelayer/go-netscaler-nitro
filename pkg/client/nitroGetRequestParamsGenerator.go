@@ -16,6 +16,6 @@
 
 package client
 
-type NodeReader interface {
-	GetNodeUrl(scheme UrlSchemeReader) string
+type NitroGetRequestParamsGenerator interface {
+	GetNitroRequestUrlQueryString() string
 }
