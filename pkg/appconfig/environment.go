@@ -19,38 +19,26 @@ package appconfig
 import (
 	"errors"
 	"fmt"
-	"github.com/citrix/adc-nitro-go/service"
+	"github.com/corelayer/go-netscaler-nitro/pkg/client"
 	"log"
 )
 
 type Environment struct {
-	Name        string             `json:"name" yaml:"name"`               // Target environment name, such as "Production"
-	Type        EnvironmentType    `json:"type" yaml:"type"`               // Target type: "StandAlone", "HighAvailabilityPair", "Cluster"
-	SNIP        Node               `json:"snip" yaml:"snip"`               // Connection details for the shared SNIP (SNIP) of the environment
-	Nodes       []Node             `json:"nodes" yaml:"nodes"`             // Connection details for the individual NSIP of each node
-	Credentials Credentials        `json:"credentials" yaml:"credentials"` // Credentials
-	Settings    ConnectionSettings `json:"settings" yaml:"settings"`       // Connections settings
+	Name        string          `json:"name" yaml:"name"`               // Target environment name, such as "Production"
+	Type        EnvironmentType `json:"type" yaml:"type"`               // Target type: "StandAlone", "HighAvailabilityPair", "Cluster"
+	SNIP        Node            `json:"snip" yaml:"snip"`               // Connection details for the shared SNIP (SNIP) of the environment
+	Nodes       []Node          `json:"nodes" yaml:"nodes"`             // Connection details for the individual Nodes of each node
+	Credentials Credentials     `json:"credentials" yaml:"credentials"` // Credentials
+	Settings    ClientSettings  `json:"settings" yaml:"settings"`       // Connections settings
 }
 
-//GetAllNitroClients Get a map of NitroClient for every node in the environment (NSIP/SNIP)
-func (e *Environment) GetAllNitroClients() (map[string]service.NitroClient, error) {
-	clients := make(map[string]service.NitroClient)
+//GetAllNitroClients Get a map of NitroClient for every node in the environment (Nodes/SNIP)
+func (e *Environment) GetAllNitroClients(logger *log.Logger) (map[string]client.NitroClient, error) {
+	clients := make(map[string]client.NitroClient)
 	if len(e.Nodes) != 0 {
 		for _, n := range e.Nodes {
-			client, err := service.NewNitroClientFromParams(
-				service.NitroParams{
-					Url:           n.GetNodeUrl(e.Settings.UrlScheme),
-					Username:      e.Credentials.Username,
-					Password:      e.Credentials.Password,
-					ProxiedNs:     "",
-					SslVerify:     e.Settings.ValidateServerCertificate,
-					Timeout:       e.Settings.Timeout,
-					RootCAPath:    "",
-					ServerName:    "",
-					Headers:       nil,
-					LogLevel:      "",
-					JSONLogFormat: false,
-				})
+			nitroSettings := n.GetNitroSettings(e.Settings, e.Credentials)
+			client, err := client.NewNitroClient(nitroSettings, logger)
 
 			if err != nil {
 				log.Printf("Could not create client for environment %s, node %s", e.Name, n.Name)
@@ -63,26 +51,13 @@ func (e *Environment) GetAllNitroClients() (map[string]service.NitroClient, erro
 
 	emptyNode := Node{}
 	if e.SNIP != emptyNode {
-		client, err := service.NewNitroClientFromParams(
-			service.NitroParams{
-				Url:           e.SNIP.GetNodeUrl(e.Settings.UrlScheme),
-				Username:      e.Credentials.Username,
-				Password:      e.Credentials.Password,
-				ProxiedNs:     "",
-				SslVerify:     e.Settings.ValidateServerCertificate,
-				Timeout:       e.Settings.Timeout,
-				RootCAPath:    "",
-				ServerName:    "",
-				Headers:       nil,
-				LogLevel:      "",
-				JSONLogFormat: false,
-			})
+		nitroSettings := e.SNIP.GetNitroSettings(e.Settings, e.Credentials)
+		client, err := client.NewNitroClient(nitroSettings, logger)
 
 		if err != nil {
 			log.Printf("Could not create client for environment %s, SNIP %s", e.Name, e.SNIP.Name)
 			return clients, err
 		}
-
 		clients["SNIP"] = *client
 	}
 
@@ -90,8 +65,8 @@ func (e *Environment) GetAllNitroClients() (map[string]service.NitroClient, erro
 }
 
 //GetPrimaryNodeName Get the client name of the primary node in the environment
-func (e *Environment) GetPrimaryNodeName() (string, error) {
-	clients, err := e.GetAllNitroClients()
+func (e *Environment) GetPrimaryNodeName(logger *log.Logger) (string, error) {
+	clients, err := e.GetAllNitroClients(logger)
 	if err != nil {
 		return "", err
 	}
@@ -107,7 +82,7 @@ func (e *Environment) GetPrimaryNodeName() (string, error) {
 		return "", errors.New(errText)
 	}
 
-	// Return client for NSIP of the only node in a Standalone NetScaler environment
+	// Return client for Nodes of the only node in a Standalone NetScaler environment
 	if e.Type == Standalone {
 		if len(e.Nodes) == 1 {
 			return e.Nodes[0].Name, nil
@@ -130,13 +105,14 @@ func (e *Environment) GetPrimaryNodeName() (string, error) {
 }
 
 //CheckNodeIsPrimary Check if the provided NitroClient is acting as a primary node
-func CheckNodeIsPrimary(client service.NitroClient) (bool, error) {
-	response, err := client.FindResource(service.Hanode.Type(), "0")
-	if err == nil {
-		if response["state"] == "Primary" {
-			return true, nil
-		}
-		return false, nil
-	}
-	return false, err
+func CheckNodeIsPrimary(client client.NitroClient) (bool, error) {
+	//response, err := client.FindResource(service.Hanode.Type(), "0")
+	//if err == nil {
+	//	if response["state"] == "Primary" {
+	//		return true, nil
+	//	}
+	//	return false, nil
+	//}
+	//return false, err
+	return false, nil
 }

@@ -29,7 +29,7 @@ type NitroClient struct {
 	log      *log.Logger
 }
 
-func newClient(settings NitroSettings, logger *log.Logger) (*NitroClient, error) {
+func NewNitroClient(settings NitroSettings, logger *log.Logger) (*NitroClient, error) {
 	tlsLog, err := settings.GetTlsSecretLogWriter()
 	if err != nil {
 		return nil, err

@@ -14,15 +14,18 @@
  *    limitations under the License.
  */
 
-package appconfig
+package config
 
-type EnvironmentType int
-
-const (
-	UnknownEnvironmentType EnvironmentType = iota
-	Standalone
-	HighAvailable
-	Cluster
-)
-
-//go:generate stringer -type=EnvironmentType -output=environmentType_string.go
+type HaNodeResponse struct {
+	Id                   string  `json:"id"`
+	HaStatus             string  `json:"hastatus"`
+	HaSync               string  `json:"hasync"`
+	HaProp               string  `json:"haprop"`
+	HelloInterval        float64 `json:"hellointerval"`
+	DeadInterval         float64 `json:"deadinterval"`
+	Failsafe             string  `json:"failsafe"`
+	MaxFlips             float64 `json:"maxflips"`
+	MaxFliptime          float64 `json:"maxfliptime"`
+	SyncVlan             float64 `json:"syncvlan"`
+	SyncStatusStrictMode string  `json:"syncstatusstrictmode"`
+}

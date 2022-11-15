@@ -16,7 +16,7 @@
 
 package appconfig
 
-type ConnectionSettings struct {
+type ClientSettings struct {
 	UrlScheme                 UrlScheme `json:"urlScheme" yaml:"urlScheme"`                                                   // Secure (HTTPS) or Insecure (HTTP) Connection
 	ValidateServerCertificate bool      `json:"verifyCertificate" yaml:"verifyCertificate"`                                   // Validate server certificate
 	Timeout                   int       `json:"timeout" yaml:"timeout"`                                                       // Request timeout in seconds

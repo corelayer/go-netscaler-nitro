@@ -16,12 +16,25 @@
 
 package appconfig
 
+import "github.com/corelayer/go-netscaler-nitro/pkg/client"
+
 type Node struct {
 	Name    string `json:"name" yaml:"name"`
 	Address string `json:"address" yaml:"address"`
 }
 
-//GetNodeUrl Get the full Url for the Node using the provided SchemeReader
-func (n *Node) GetNodeUrl(scheme UrlSchemeReader) string {
+func (n Node) GetNodeUrl(scheme UrlSchemeReader) string {
 	return scheme.GetUrlScheme() + n.Address
+}
+
+func (n Node) GetNitroSettings(settings ClientSettings, credentials Credentials) client.NitroSettings {
+	return client.NitroSettings{
+		BaseUrl:                   n.GetNodeUrl(settings.UrlScheme),
+		Username:                  credentials.Username,
+		Password:                  credentials.Password,
+		Timeout:                   settings.Timeout,
+		ValidateServerCertificate: settings.ValidateServerCertificate,
+		LogTlsSecrets:             settings.LogTlsSecrets,
+		LogTlsSecretsDestination:  settings.LogTlsSecretsDestination,
+	}
 }

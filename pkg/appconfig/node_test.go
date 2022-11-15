@@ -34,7 +34,7 @@ func TestNode_GetNodeUrl(t *testing.T) {
 	}{
 		{
 			address: "node",
-			scheme:  UnknownScheme,
+			scheme:  UnknownUrlScheme,
 			want:    "node",
 		}, {
 			address: "node",
@@ -47,7 +47,7 @@ func TestNode_GetNodeUrl(t *testing.T) {
 		},
 		{
 			address: "127.0.0.1",
-			scheme:  UnknownScheme,
+			scheme:  UnknownUrlScheme,
 			want:    "127.0.0.1",
 		}, {
 			address: "127.0.0.1",

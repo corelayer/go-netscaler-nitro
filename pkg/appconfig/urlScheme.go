@@ -19,14 +19,18 @@ package appconfig
 type UrlScheme int
 
 const (
-	UnknownScheme UrlScheme = 0
-	HTTP                    = 1
-	HTTPS                   = 2
+	UnknownUrlScheme UrlScheme = 0
+	HTTP                       = 1
+	HTTPS                      = 2
 )
+
+//go:generate stringer -type=UrlScheme -output=urlScheme_string.go
 
 //GetUrlScheme Returns the URL prefix for the selected UrlScheme
 func (s UrlScheme) GetUrlScheme() string {
 	switch s {
+	case UnknownUrlScheme:
+		return ""
 	case HTTP:
 		return "http://"
 	case HTTPS:

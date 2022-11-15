@@ -16,13 +16,7 @@
 
 package appconfig
 
-type EnvironmentType int
-
-const (
-	UnknownEnvironmentType EnvironmentType = iota
-	Standalone
-	HighAvailable
-	Cluster
-)
-
-//go:generate stringer -type=EnvironmentType -output=environmentType_string.go
+type Organization struct {
+	Name         string
+	Environments []Environment
+}
